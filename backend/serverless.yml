@@ -1,0 +1,77 @@
+custom:
+  #our vars
+  aws_account_id: <your aws id>
+  aws_region: <you aws region>
+
+service: simple 
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: sls-dev
+  apiName: api/v1
+  region: ${self:custom.aws_region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:custom.aws_region}:${self:custom.aws_account_id}:table/articleTable"
+
+functions:
+  createArticle:
+    handler: articles/create.handler
+    events:
+     - http:
+         path: api/v1/articles
+         method: post
+         cors: true
+  listArticle:
+    handler: articles/list.handler
+    events:
+     - http:
+         path: api/v1/articles
+         method: get
+         cors: true       
+  readArticle:
+    handler: articles/read.handler
+    events:
+     - http:
+         path: api/v1/articles/{id}
+         method: get
+         cors: true
+  updateArticle:
+    handler: articles/update.handler
+    events:
+     - http:
+         path: api/v1/articles/{id}
+         method: put
+         cors: true
+  deleteArticle:
+    handler: articles/delete.handler
+    events:
+     - http:
+         path: api/v1/articles/{id}
+         method: delete
+         cors: true
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: articleTable
+        AttributeDefinitions:
+          - AttributeName: article_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: article_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

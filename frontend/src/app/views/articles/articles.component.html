@@ -1,0 +1,33 @@
+
+<div class="container">
+  <h3>Articles</h3>
+  <input type="button" class="btn btn-small btn-secondary" (click)="add()" value="Add Article" />
+
+  <div class="row" style="margin-top: 20px">
+    <div class="col-4" *ngFor="let article of articles">
+      <div class="main_container drop_shadow" style="margin: 13px;position: relative"
+        (mouseenter)="article.isSelect = true" (mouseleave)="article.isSelect = false">
+        <h5>{{article.text.title}}</h5>
+        <div (click)="show(article)" *ngIf="article.isSelect" class="button-select" #menuButton>
+          <a>...</a>
+        </div>
+
+        <!-- drop menu -->
+        <div *ngIf="article.showMenu" class="menuPanel" #menuDrop>
+          <ul class="menuContent list-group">
+            <a class="list-group-item" (click)="edit(article)">
+              Edit
+            </a>
+            <a class="list-group-item" (click)="remove(article)">
+              Remove
+            </a>
+          </ul>
+        </div>
+
+        <div style="margin-top: 30px">
+          {{article.text.text}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
